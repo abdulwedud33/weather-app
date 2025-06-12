@@ -90,7 +90,7 @@ const Weather = () => {
   };
 
   return (
-    <div className="bg-custom-bg bg-cover bg-center h-screen w-screen">
+    <div className="bg-[url('/weather-app/images/background.jpg')] bg-cover bg-center h-screen w-screen">
       <div className="flex flex-col items-center justify-center h-full">
         <h1 className="text-3xl mb-4 text-purple-400">Weather App</h1>
         <div className="bg-black text-yellow-200 bg-opacity-50 flex flex-col justify-center items-center p-4 max-w-96 overflow-hidden rounded-lg shadow-lg">
