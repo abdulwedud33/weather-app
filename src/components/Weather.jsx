@@ -16,9 +16,7 @@ const Weather = () => {
       return;
     }
     if (!API_KEY) {
-      setError(
-        "API key is missing. Please set the VITE_WEATHER_API_KEY environment variable."
-      );
+      setError("API key is missing.");
       setWeatherData(null);
       setWeatherType(null);
       return;
@@ -33,17 +31,15 @@ const Weather = () => {
       setError(null);
       setcityName("");
     } catch (error) {
-      setError(
-        error.response?.data?.message || "process Failed, somethong wrong !"
-      );
+      setError("Failed to fetch data.");
       setWeatherData(null);
       setWeatherType(null);
       setcityName("");
     }
   };
 
-  const getWeatherIcon = (weatherType) => {
-    switch (weatherType) {
+  const getWeatherIcon = (type) => {
+    switch (type) {
       case "drizzle":
         return "fas fa-cloud-rain";
       case "rain":
@@ -51,137 +47,114 @@ const Weather = () => {
       case "wind":
         return "fas fa-wind";
       case "snowflake":
-        return "fas fa-snowflake";
       case "clear":
+      case "snow":
         return "fas fa-snowflake";
       case "clouds":
         return "fas fa-cloud";
       case "haze":
+      case "fog":
+      case "mist":
         return "fas fa-smog";
       case "partly-cloudy":
         return "fas fa-cloud-sun";
-      case "mist":
-        return "fas fa-smog";
       case "sunny":
         return "fas fa-sun";
-      case "cloudy":
-        return "fas fa-cloud";
-      case "snow":
-        return "fas fa-snowflake";
       case "thunderstorm":
         return "fas fa-bolt";
-      case "fog":
-        return "fas fa-smog";
       case "clear-night":
         return "fas fa-moon";
       default:
         return "fas fa-question";
     }
   };
+
   const getCurrentDate = () => {
-    const date = new Date();
-    const options = {
+    return new Date().toLocaleDateString(undefined, {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
-    };
-    return date.toLocaleDateString(undefined, options);
+    });
   };
 
   return (
-    <div className="bg-[url('/weather-app/images/background.jpg')] bg-cover bg-center h-screen w-screen">
-      <div className="flex flex-col items-center justify-center h-full">
-        <h1 className="text-3xl mb-4 text-purple-400">Weather App</h1>
-        <div className="bg-black text-yellow-200 bg-opacity-50 flex flex-col justify-center items-center p-4 max-w-96 overflow-hidden rounded-lg shadow-lg">
-          <div className="flex items-center justify-between w-full">
-            <input
-              type="text"
-              value={cityName}
-              onChange={(e) => setcityName(e.target.value)}
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  getWeatherData(cityName);
-                }
-              }}
-              placeholder="Enter City Name"
-              className="focus:outline-none focus:ring-0 w-full mr-3 p-2 rounded-lg bg-purple-800 text-gray-300 capitalize font-semibold"
-            />
-            <button
-              onClick={async () => await getWeatherData(cityName)}
-              className="bg-purple-800 p-2 rounded-lg hover:bg-purple-500 active:bg-purple-900 transition-all cursor-pointer"
-            >
-              <i className="fas fa-search text-white font-bold"></i>
-            </button>
-          </div>
-          {error && <p className="text-red-500 text-sm mt-2">{error}</p>}
-          {weatherData && (
-            <div className="flex flex-col items-center mt-4">
-              <div className="flex flex-col items-center gap-2">
-                <div className="flex flex-row gap-4 items-center justify-center">
-                  <h2 className="text-2xl font-bold mb-2 text-slate-400">
-                    {weatherData.name}
-                    <span>,</span>
-                  </h2>
-                  <p className="text-lg font-semibold mb-2 text-slate-400">
-                    {weatherData.sys.country}
-                  </p>
-                </div>
-                <p className="text-lg font-bold mb-6 text-slate-400">
-                  {getCurrentDate()}
-                </p>
-              </div>
+    <div className="min-h-screen bg-[url('/weather-app/images/background.jpg')] bg-cover bg-center px-4 py-8">
+      <div className="max-w-md mx-auto bg-black bg-opacity-50 p-6 rounded-xl shadow-lg text-yellow-200">
+        <h1 className="text-2xl sm:text-3xl text-center mb-6 text-purple-400 font-bold">
+          Weather App
+        </h1>
+
+        <div className="flex gap-2 mb-4">
+          <input
+            type="text"
+            value={cityName}
+            onChange={(e) => setcityName(e.target.value)}
+            onKeyDown={(e) => e.key === "Enter" && getWeatherData(cityName)}
+            placeholder="Enter City Name"
+            className="w-full p-2 rounded-lg bg-purple-800 text-white placeholder-gray-300 focus:outline-none"
+          />
+          <button
+            onClick={() => getWeatherData(cityName)}
+            className="bg-purple-800 p-2 rounded-lg hover:bg-purple-600 transition"
+          >
+            <i className="fas fa-search text-white" />
+          </button>
+        </div>
+
+        {error && <p className="text-red-400 text-sm">{error}</p>}
+
+        {weatherData && (
+          <div className="text-center mt-6 space-y-4">
+            <div>
+              <h2 className="text-xl font-bold text-slate-300">
+                {weatherData.name}, {weatherData.sys.country}
+              </h2>
+              <p className="text-sm text-slate-400">{getCurrentDate()}</p>
+            </div>
+
+            <div>
               <i
-                className={`${getWeatherIcon(
-                  weatherType
-                )} text-6xl text-slate-400`}
-              ></i>
-              <p className="text-xl font-bold mb-4 text-slate-400">
+                className={`${getWeatherIcon(weatherType)} text-5xl text-slate-300`}
+              />
+              <p className="capitalize text-lg font-medium text-slate-300 mt-2">
                 {weatherData.weather[0].description}
               </p>
-              <h2 className="text-xl font-bold text-slate-400">
+              <h2 className="text-2xl font-bold text-slate-300">
                 {Math.round(weatherData.main.temp)}°C
               </h2>
-              <div className="grid grid-cols-3 gap-2 p-3 items-center justify-center mt-4 w-full">
-                <div className="flex flex-col items-center gap-2 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 bg-opacity-50 p-2 rounded-lg shadow-lg">
-                  <p className="text-center text-lg  font-bold text-slate-900">
-                    Humidity
-                  </p>
-                  <i className="fas fa-tint text-2xl text-slate-900"></i>
-                  <p className="text-center text-lg  font-bold text-slate-900">
-                    {weatherData.main.humidity}%
-                  </p>
-                </div>
-                <div className="flex flex-col items-center gap-2 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 bg-opacity-50 p-2 rounded-lg shadow-lg">
-                  <p className="text-center text-lg  font-bold text-slate-900">
-                    Wind
-                  </p>
-                  <i className="fas fa-wind text-2xl text-slate-900"></i>
-                  <p className="text-center text-lg  font-bold text-slate-900">
-                    {weatherData.wind.speed}km/h
-                  </p>
-                </div>
-                <div className="flex flex-col items-center gap-2 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 bg-opacity-50 p-2 rounded-lg shadow-lg">
-                  <p className="text-center text-lg  font-bold text-slate-900">
-                    Pressure
-                  </p>
-                  <i className="fas fa-tachometer-alt text-2xl text-slate-900"></i>
-                  <p className="text-center text-lg  font-bold text-slate-900">
-                    {weatherData.main.pressure}hPa
-                  </p>
-                </div>
-              </div>
             </div>
-          )}
-        </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+              <WeatherStat
+                label="Humidity"
+                icon="fas fa-tint"
+                value={`${weatherData.main.humidity}%`}
+              />
+              <WeatherStat
+                label="Wind"
+                icon="fas fa-wind"
+                value={`${weatherData.wind.speed} km/h`}
+              />
+              <WeatherStat
+                label="Pressure"
+                icon="fas fa-tachometer-alt"
+                value={`${weatherData.main.pressure} hPa`}
+              />
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
 };
 
+const WeatherStat = ({ label, icon, value }) => (
+  <div className="flex flex-col items-center gap-1 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 bg-opacity-60 p-3 rounded-lg shadow">
+    <p className="text-sm font-semibold text-slate-900">{label}</p>
+    <i className={`${icon} text-xl text-slate-900`} />
+    <p className="text-sm font-bold text-slate-900">{value}</p>
+  </div>
+);
+
 export default Weather;
-
-/*
-
-
-*/
