@@ -26,12 +26,15 @@ const Weather = () => {
         `https://api.openweathermap.org/data/2.5/weather?q=${cityName}&appid=${API_KEY}&units=metric`
       );
       const data = await response.json();
+      if (data.cod !== 200) {
+        throw new Error(data.message);
+      }
       setWeatherData(data);
       setWeatherType(data.weather[0].main.toLowerCase());
       setError(null);
       setcityName("");
     } catch (error) {
-      setError("Failed to fetch data.");
+      setError(error.message || "Something went wrong!");
       setWeatherData(null);
       setWeatherType(null);
       setcityName("");
@@ -69,63 +72,62 @@ const Weather = () => {
     }
   };
 
-  const getCurrentDate = () => {
-    return new Date().toLocaleDateString(undefined, {
+  const getCurrentDate = () =>
+    new Date().toLocaleDateString(undefined, {
       weekday: "long",
       year: "numeric",
       month: "long",
       day: "numeric",
     });
-  };
 
   return (
-    <div className="min-h-screen bg-[url('/weather-app/images/background.jpg')] bg-cover bg-center px-4 py-8">
-      <div className="max-w-md mx-auto bg-black bg-opacity-50 p-6 rounded-xl shadow-lg text-yellow-200">
-        <h1 className="text-2xl sm:text-3xl text-center mb-6 text-purple-400 font-bold">
+    <div className="min-h-screen bg-[url('/weather-app/images/background.jpg')] bg-cover bg-center px-4 py-6 flex items-center justify-center">
+      <div className="w-full max-w-sm bg-black bg-opacity-60 backdrop-blur-md rounded-2xl p-5 shadow-xl text-yellow-100">
+        <h1 className="text-2xl font-bold text-center text-purple-400 mb-4">
           Weather App
         </h1>
 
-        <div className="flex gap-2 mb-4">
+        <div className="flex flex-col sm:flex-row gap-2 mb-4">
           <input
             type="text"
             value={cityName}
             onChange={(e) => setcityName(e.target.value)}
             onKeyDown={(e) => e.key === "Enter" && getWeatherData(cityName)}
-            placeholder="Enter City Name"
-            className="w-full p-2 rounded-lg bg-purple-800 text-white placeholder-gray-300 focus:outline-none"
+            placeholder="Enter city"
+            className="flex-1 px-3 py-2 rounded-md bg-purple-800 text-white placeholder-gray-300 focus:outline-none"
           />
           <button
             onClick={() => getWeatherData(cityName)}
-            className="bg-purple-800 p-2 rounded-lg hover:bg-purple-600 transition"
+            className="bg-purple-800 px-4 py-2 rounded-md hover:bg-purple-600 transition"
           >
-            <i className="fas fa-search text-white" />
+            <i className="fas fa-search text-white"></i>
           </button>
         </div>
 
-        {error && <p className="text-red-400 text-sm">{error}</p>}
+        {error && <p className="text-sm text-red-400 text-center mb-3">{error}</p>}
 
         {weatherData && (
-          <div className="text-center mt-6 space-y-4">
+          <div className="text-center space-y-4">
             <div>
-              <h2 className="text-xl font-bold text-slate-300">
+              <h2 className="text-lg font-semibold text-slate-200">
                 {weatherData.name}, {weatherData.sys.country}
               </h2>
-              <p className="text-sm text-slate-400">{getCurrentDate()}</p>
+              <p className="text-xs text-slate-400">{getCurrentDate()}</p>
             </div>
 
             <div>
               <i
                 className={`${getWeatherIcon(weatherType)} text-5xl text-slate-300`}
-              />
-              <p className="capitalize text-lg font-medium text-slate-300 mt-2">
+              ></i>
+              <p className="capitalize text-base font-medium text-slate-200 mt-2">
                 {weatherData.weather[0].description}
               </p>
-              <h2 className="text-2xl font-bold text-slate-300">
+              <h2 className="text-2xl font-bold text-slate-200">
                 {Math.round(weatherData.main.temp)}°C
               </h2>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 mt-4">
+            <div className="grid grid-cols-1 gap-3">
               <WeatherStat
                 label="Humidity"
                 icon="fas fa-tint"
@@ -150,10 +152,12 @@ const Weather = () => {
 };
 
 const WeatherStat = ({ label, icon, value }) => (
-  <div className="flex flex-col items-center gap-1 bg-gradient-to-r from-purple-500 via-purple-600 to-purple-700 bg-opacity-60 p-3 rounded-lg shadow">
-    <p className="text-sm font-semibold text-slate-900">{label}</p>
-    <i className={`${icon} text-xl text-slate-900`} />
-    <p className="text-sm font-bold text-slate-900">{value}</p>
+  <div className="flex justify-between items-center bg-gradient-to-r from-purple-500 to-purple-700 bg-opacity-80 p-3 rounded-lg">
+    <div className="flex items-center gap-2 text-slate-900 font-semibold">
+      <i className={`${icon} text-lg`} />
+      <span>{label}</span>
+    </div>
+    <p className="text-slate-900 font-bold text-sm">{value}</p>
   </div>
 );
 
