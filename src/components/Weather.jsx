@@ -82,7 +82,7 @@ const Weather = () => {
 
   return (
     <div className="min-h-screen bg-[url('/weather-app/images/background.jpg')] bg-cover bg-center flex items-center justify-center px-4 py-8">
-      <div className="w-full max-w-sm bg-black bg-opacity-60 backdrop-blur-md rounded-3xl p-6 sm:p-8 shadow-2xl text-yellow-100 space-y-6 transition-all">
+      <div className="w-full max-w-sm bg-black bg-opacity-60 backdrop-blur-md rounded-3xl p-10 sm:p-8 shadow-2xl text-yellow-100 space-y-6 transition-all">
         <h1 className="text-3xl font-bold text-center text-purple-400 tracking-wide">
           Weather App
         </h1>
